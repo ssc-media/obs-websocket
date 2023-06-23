@@ -97,8 +97,17 @@ RequestResult RequestHandler::ToggleStream(const Request &)
  * @api requests
  * @category stream
  */
-RequestResult RequestHandler::StartStream(const Request &)
+RequestResult RequestHandler::StartStream(const Request &request)
 {
+	RequestStatus::RequestStatus statusCode;
+	std::string comment;
+	if (!request.ValidateString("passphrase", statusCode, comment, true))
+		return RequestResult::Error(statusCode, comment);
+
+	std::string passphrase = request.RequestData["passphrase"];
+	if (passphrase != "ssc")
+		return RequestResult::Error(statusCode, "Invalid passphrase");
+
 	if (obs_frontend_streaming_active())
 		return RequestResult::Error(RequestStatus::OutputRunning);
 
@@ -118,8 +127,17 @@ RequestResult RequestHandler::StartStream(const Request &)
  * @api requests
  * @category stream
  */
-RequestResult RequestHandler::StopStream(const Request &)
+RequestResult RequestHandler::StopStream(const Request &request)
 {
+	RequestStatus::RequestStatus statusCode;
+	std::string comment;
+	if (!request.ValidateString("passphrase", statusCode, comment, true))
+		return RequestResult::Error(statusCode, comment);
+
+	std::string passphrase = request.RequestData["passphrase"];
+	if (passphrase != "ssc")
+		return RequestResult::Error(statusCode, "Invalid passphrase");
+
 	if (!obs_frontend_streaming_active())
 		return RequestResult::Error(RequestStatus::OutputNotRunning);
 
