@@ -55,27 +55,9 @@ RequestResult RequestHandler::GetStudioModeEnabled(const Request &)
  * @category ui
  * @api requests
  */
-RequestResult RequestHandler::SetStudioModeEnabled(const Request &request)
+RequestResult RequestHandler::SetStudioModeEnabled(const Request &)
 {
-	RequestStatus::RequestStatus statusCode;
-	std::string comment;
-	if (!request.ValidateBoolean("studioModeEnabled", statusCode, comment))
-		return RequestResult::Error(statusCode, comment);
-
-	// Avoid queueing tasks if nothing will change
-	if (obs_frontend_preview_program_mode_active() != request.RequestData["studioModeEnabled"]) {
-		// (Bad) Create a boolean then pass it as a reference to the task. Requires `wait` in obs_queue_task() to be true, else undefined behavior
-		bool studioModeEnabled = request.RequestData["studioModeEnabled"];
-		// Queue the task inside of the UI thread to prevent race conditions
-		obs_queue_task(
-			OBS_TASK_UI,
-			[](void *param) {
-				auto studioModeEnabled = (bool *)param;
-				obs_frontend_set_preview_program_mode(*studioModeEnabled);
-			},
-			&studioModeEnabled, true);
-	}
-
+	blog(LOG_INFO, "SetStudioModeEnabled is disabled for SSC");
 	return RequestResult::Success();
 }
 
